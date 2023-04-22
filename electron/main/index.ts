@@ -4,16 +4,6 @@ import { join } from 'node:path'
 import fs from "node:fs";
 import path from "node:path";
 
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js    > Electron-Main
-// │ └─┬ preload
-// │   └── index.js    > Preload-Scripts
-// ├─┬ dist
-// │ └── index.html    > Electron-Renderer
-//
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
@@ -127,10 +117,16 @@ ipcMain.handle('open-win', (_, arg) => {
   }
 })
 
+//////////////////////////////////
+//    ipcMain自定义事件监听      //
+//////////////////////////////////
+
+// 打开调试工具
 ipcMain.on("open-devtool", () => {
   win?.webContents.openDevTools();
 });
 
+// 切换始终保持最前
 ipcMain.on("toggle-pin", () => {
   if (win?.isAlwaysOnTop()) {
     win?.setAlwaysOnTop(false);
@@ -139,10 +135,12 @@ ipcMain.on("toggle-pin", () => {
   }
 });
 
+// 最小化窗口
 ipcMain.on("minimize", () => {
   win?.minimize();
 });
 
+// 最大化窗口
 ipcMain.on("maximize", () => {
   if (win?.isMaximized()) {
     win?.restore();
@@ -151,21 +149,26 @@ ipcMain.on("maximize", () => {
   }
 });
 
+// 关闭窗口
 ipcMain.on("close", () => {
   win?.close();
 });
 
+// 获取本地文件，对应ipcRenderer.invoke("get-message")
 ipcMain.handle("get-message", () => {
   // https://www.electronjs.org/zh/docs/latest/api/app#appgetpathname
+  // 使用app.getPath可以获取到electron内置的几个运行相关路径
   const file_path = path.join(app.getPath("userData"), "message.json");
+  // 复制默认文件，通常用于创建默认配置的情景
   if (!fs.existsSync(file_path)) {
     const default_message = {
       "hello": "world",
       "number": 300,
       "boolean": true
     }
-
+    // 写入带有4格空格缩进的json字符串，增强调试的可读性
     fs.writeFileSync(file_path, JSON.stringify(default_message, null, 4));
   }
+  // 读出的文件是字符串，不用做额外的处理就可以返回。这里并没有做读取失败处理，并不可靠
   return fs.readFileSync(file_path, "utf-8");
 });
