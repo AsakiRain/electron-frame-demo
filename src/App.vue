@@ -25,7 +25,7 @@ const get_message = async () => {
   console.log("message", message);
 
   if (!message_container.value) return;
-  message_container.value.innerText = JSON.stringify(message, null, 4);
+  message_container.value.innerHTML = JSON.stringify(message, null, 4);
 };
 
 onMounted(async () => {
@@ -146,7 +146,7 @@ header .window-toolbar span:hover {
 }
 
 textarea{
-  width: 400px;
-  height: 300px;
+  width: 200px;
+  height: 100px;
 }
 </style>
