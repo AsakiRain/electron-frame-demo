@@ -3,8 +3,9 @@
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  appId: "cc.irain.asak.electron-frame-demo",
   "asar": true,
+  icon: "public/icon.png",
   "directories": {
     "output": "release/${version}"
   },
@@ -39,5 +40,14 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  }
+  },
+  linux: {
+    icon: "public/icon.png",
+  },
+  extraResources: [
+    // {
+    //   from: "settings.json",
+    //   to: "../",
+    // },
+  ],
 }
